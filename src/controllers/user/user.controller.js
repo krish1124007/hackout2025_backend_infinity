@@ -9,9 +9,9 @@ import {OptimizationAgent} from "../../ai/findlandengine.js"
 import { SUBCD } from "../../ai/subsb.js"
 
 const getProfile = asyncHandler(async(req,res)=>{
-    const {id} = req.body;
+    
 
-    const user = await User.findById(id).select("password");
+    const user = await User.findById(req.user._id).select("password");
 
     if(!user)
     {
@@ -82,6 +82,8 @@ const findLand = asyncHandler(async(req,res)=>{
 
 
 })
+
+
 
 
 
