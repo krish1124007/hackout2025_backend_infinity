@@ -17,7 +17,7 @@ const createAccount = asyncHandler(async (req, res) => {
     const isexists = await isAccountExists({email});
 
     if (isexists.exist) {
-        returnRespones(res, 400, "This account is already exits", { success: false, data: null })
+       return  returnRespones(res, 400, "This account is already exits", { success: false, data: null })
     }
 
 
