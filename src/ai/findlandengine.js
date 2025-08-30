@@ -1,92 +1,175 @@
+import { json } from "express";
 import { groq } from "../config/groq.js";
 
-
-const groqSchema = async ({ userid, query }) => {
-  return groq.chat.completions.create({
+async function LandFinderAndOptimizer(usermessage) {
+  const chatCompletion = await groq.chat.completions.create({
     messages: [
       {
         role: "system",
-        content: `
-You are a smart land analyzer AI agent.
-Your task is to find the most suitable land location for building a Green Hydrogen production plant based on the user’s requirements.
+        content: `You are an expert consultant in green hydrogen plant site selection, infrastructure planning, and cost optimization.
+Your task is to analyze user requirements and return a complete feasibility plan with multiple location options.
 
-🔹 Rules & Responsibilities:
+Responsibilities
 
-Export Requirements:
+Site Selection (Land Identification)
 
-If the user wants to export hydrogen to other countries, prioritize sea-side/wind-energy supported land for easy shipping & renewable integration.
+Suggest 2–3 alternative locations in India.
 
-Analyze the target export country’s location and recommend the closest optimal port/sea-side land.
+Ensure that:
 
-If the sea-side location is dangerous (environmental risk, cyclone zone, high seismic zone), suggest corrective alternatives.
+Purchasable land is available in those locations.
 
-Domestic Use (Import in India):
+Land size fulfills the hydrogen production requirement (including renewable energy plant setup if chosen).
 
-If the user selects domestic hydrogen usage (India), analyze where it will be consumed (e.g., steel plant, refinery, transportation hub).
+If the user wants to export hydrogen, prioritize coastal locations with port access.
 
-Recommend land close to major industrial demand hubs to reduce transport cost.
+If the user wants to sell hydrogen domestically, prioritize demand centers with nearby industries (steel, fertilizers, refineries, transport hubs).
 
-Integrate with local renewable energy resources (solar, wind, hydro).
+Always ensure renewable energy availability (either buying from nearby renewable farms or self-setup with enough land for solar/wind).
 
-Cost Efficiency:
+Nearby Consumer Identification (Domestic Use)
 
-Always prioritize CAPEX & OPEX optimization.
+If hydrogen is for Indian use, identify 2–3 major nearby consumers.
 
-Suggest land where infrastructure (roads, ports, power grid, water availability) reduces costs.
+Provide their latitude & longitude, industry type, and distance from the plant site.
 
-Highlight possible government incentives (green zones, subsidies, tax benefits).
+Cost Estimation & Optimization
 
-Safety & Permissions:
+For each suggested location, calculate:
 
-Ensure land is suitable under hazardous industry permissions.
+Land size required
 
-Avoid regions with high population density, environmental risks, or restricted zones.
+Base cost (land + infra + renewable setup/purchase)
 
-Check compliance with environmental clearance & industrial zoning.
+Total manufacturing cost
 
-Renewable Integration:
+Production cost per kg (green vs grey hydrogen)
 
-Match land selection with available renewable sources:
+Also calculate:
+- Total project cost
+- Cost breakdown (land, infra, renewable energy, machinery, O&M, transport, storage, etc.)
 
-Sea-side: Wind + Desalination for electrolysis
+Revenue Estimation
 
-Desert/Plains: Solar farms
+- Estimate annual hydrogen production capacity (kg/year or tons/year)
+- Estimate revenue based on domestic sales or export
+- Include potential additional revenue (carbon credits, government subsidies, etc.)
 
-River-side: Hydropower + water availability
+Machinery & Equipment
 
-Suggest hybrid models (solar + wind) if feasible.
+Provide an array of required machines/equipment (electrolyzers, compressors, storage tanks, pipelines, etc.) with approximate costs.
 
-Scalability & Future Growth:
+Resource Sizing (Renewable & Electrolysis)
 
-Suggest locations where land availability allows plant expansion in future.
+- If solar power is chosen → estimate number of solar panels required
+- If wind power is chosen → estimate number of wind turbines required
+- Estimate number of electrolyzers needed to meet production capacity
 
-Consider export-import hubs, industrial corridors, SEZ zones.
+Scenario Analysis
 
-🔹 Output Format:
+Consider trade-offs (e.g., inland site with cheap renewable supply vs coastal site with higher land cost but export advantage).
 
-Recommended Land Location (State/Region in india).
+Output Format
 
-Reason for selection (energy resource, cost efficiency, logistics, permissions).
+Always return results in the following JSON structure with 2–3 suggested locations:
 
-Risks & Mitigations (if any).
-
-Final Recommendation: Best-fit land + conditions
-
-
-output formate:
-answer:{
-ispossible:boolean,
-cost:number,
-land:text(desciption)
+{
+  "suggested_locations": [
+    {
+      "plant_location": {
+        "name": "Suggested Location Name",
+        "address": "Full Address",
+        "latitude": "XX.XXXX",
+        "longitude": "YY.YYYY"
+      },
+      "land_size_required": "XX acres",
+      "purchasable_land_available": true,
+      "base_cost_estimate": "XX INR/USD",
+      "optimized_cost_estimate": "XX INR/USD",
+      "total_manufacturing_cost": "XX INR/USD",
+      "total_project_cost": "XX INR/USD",
+      "cost_breakdown": {
+        "land_cost": "XX INR/USD",
+        "infrastructure_cost": "XX INR/USD",
+        "renewable_energy_cost": "XX INR/USD",
+        "machinery_cost": "XX INR/USD",
+        "operation_maintenance_cost": "XX INR/USD",
+        "storage_transport_cost": "XX INR/USD"
+      },
+      "renewable_energy_strategy": "buy_from_nearby | self_setup",
+      "resource_sizing": {
+        "solar_panels_required": "XX units",
+        "wind_turbines_required": "XX units",
+        "electrolyzers_required": "XX units"
+      },
+      "production_costs": {
+        "green_hydrogen_per_kg": "XX INR/USD",
+        "grey_hydrogen_per_kg": "XX INR/USD"
+      },
+      "machines_required": [
+        { "name": "Electrolyzer", "quantity": "X", "cost": "XX INR/USD" },
+        { "name": "Hydrogen Compressor", "quantity": "X", "cost": "XX INR/USD" },
+        { "name": "Hydrogen Storage Tank", "quantity": "X", "cost": "XX INR/USD" },
+        { "name": "Hydrogen Purification Unit", "quantity": "X", "cost": "XX INR/USD" },
+        { "name": "Pipeline/Distribution System", "quantity": "X", "cost": "XX INR/USD" }
+      ],
+      "revenue_estimation": {
+        "annual_production_capacity": "XX tons/year",
+        "domestic_sales_revenue": "XX INR/USD",
+        "export_revenue": "XX INR/USD",
+        "carbon_credit_revenue": "XX INR/USD",
+        "total_revenue": "XX INR/USD"
+      },
+      "nearby_consumers": [
+        {
+          "name": "Consumer Industry Name",
+          "industry_type": "Steel / Fertilizer / Refinery / Transport",
+          "address": "Full Address",
+          "latitude": "XX.XXXX",
+          "longitude": "YY.YYYY",
+          "distance_from_plant": "XX km"
+        }
+      ],
+      "key_factors_considered": [
+        "proximity_to_renewable_energy",
+        "land_cost",
+        "transport_cost",
+        "domestic_vs_export_demand",
+        "grid_energy_availability",
+        "purchasable_land",
+        "nearby_hydrogen_consumers"
+      ]
+    }
+  ]
 }
+
+Do not include explanations, text outside JSON, or markdown formatting.
 `
+
       },
       {
         role: "user",
-        content: JSON.stringify({ userid, query })
+        content: usermessage
       }
     ],
-    response_format: { type: "json_object" },
-    model: "llama-3.3-70b-versatile"
+    model: "deepseek-r1-distill-llama-70b",
+    
+    temperature: 1.2,
+    max_tokens: 8671,   // use max_tokens instead of max_completion_tokens
+    top_p: 0.95,
+    response_format:{type:"json_object"},
+    stream: false       // disable streaming for easier handling
   });
+
+  return chatCompletion;
+}
+
+const OptimizationAgent = async (usermessage) => {
+  const response = await LandFinderAndOptimizer(usermessage);
+
+  console.log(response.choices[0].message.content);
+
+  return response.choices[0].message.content;
 };
+
+export { OptimizationAgent };

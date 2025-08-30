@@ -5,7 +5,8 @@ import { isAccountExists } from "../../utils/isexists.js";
 import { inngest } from "../../inngest/client.js";
 import { OTP } from "../../models/otp.model.js"
 import { Help } from "../../models/help.model.js";
-
+import {OptimizationAgent} from "../../ai/findlandengine.js"
+import { SUBCD } from "../../ai/subsb.js"
 
 const getProfile = asyncHandler(async(req,res)=>{
     const {id} = req.body;
@@ -56,8 +57,37 @@ const createHelp = asyncHandler(async(req,res)=>{
     return returnRespones(res,200,"your query is save we are update your question answer on the your register email",{success:true , data:help})
 })
 
+const findLand = asyncHandler(async(req,res)=>{
+    const {data} = req.body;
+
+    if(!data)
+    {
+        return returnRespones(res,400,"please Enter data",{success:false, data:"please enter data"})
+    }
+
+    const message = `hey i have this requirement ${data}. only return json data`;
+
+    const response = await OptimizationAgent(message);
+    const policy = await SUBCD(JSON.parse(response));
+
+    if(!response)
+    {
+        return returnRespones(res,500,"something problem with the Ai Agent",{success:false , data:"something problem with the ai agent"})
+    }
+
+    return returnRespones(res,200,"data fetch successfully",{success:true, data:{
+        landoptimizer:JSON.parse(response),
+        policy:policy
+    }})
+
+
+})
+
+
+
 export {
     createHelp,
     updateProfile,
-    getProfile
+    getProfile,
+    findLand
 }
