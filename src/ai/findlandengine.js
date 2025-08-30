@@ -1,4 +1,3 @@
-import { json } from "express";
 import { groq } from "../config/groq.js";
 
 async function LandFinderAndOptimizer(usermessage) {

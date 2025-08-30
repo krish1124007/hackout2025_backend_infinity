@@ -7,6 +7,7 @@ import { OTP } from "../../models/otp.model.js"
 import { Help } from "../../models/help.model.js";
 import {OptimizationAgent} from "../../ai/findlandengine.js"
 import { SUBCD } from "../../ai/subsb.js"
+import {PlantTransport} from "../../models/planttrasport.model.js"
 
 const getProfile = asyncHandler(async(req,res)=>{
     
@@ -58,12 +59,9 @@ const createHelp = asyncHandler(async(req,res)=>{
 })
 
 const findLand = asyncHandler(async(req,res)=>{
-    const {data} = req.body;
+    const data = req.body;
 
-    if(!data)
-    {
-        return returnRespones(res,400,"please Enter data",{success:false, data:"please enter data"})
-    }
+    
 
     const message = `hey i have this requirement ${data}. only return json data`;
 
@@ -83,6 +81,18 @@ const findLand = asyncHandler(async(req,res)=>{
 
 })
 
+const savePrePlantData = asyncHandler(async(req,res)=>{
+    const data = req.body;
+
+    const save_data = await PlantTransport.create({userid:req.user._id,...data});
+    if(!save_data)
+    {
+        return returnRespones(res,500,"something problem to save data in db",{success:false,  data:"something problem to save data in db"})
+
+    }
+
+    return returnRespones(res,200,"save data in db",{success:true , data:save_data})
+})
 
 
 
@@ -91,5 +101,6 @@ export {
     createHelp,
     updateProfile,
     getProfile,
-    findLand
+    findLand,
+    savePrePlantData
 }
