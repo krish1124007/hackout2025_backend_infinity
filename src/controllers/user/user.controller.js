@@ -8,6 +8,7 @@ import { Help } from "../../models/help.model.js";
 import {OptimizationAgent} from "../../ai/findlandengine.js"
 import { SUBCD } from "../../ai/subsb.js"
 import {PlantTransport} from "../../models/planttrasport.model.js"
+import {SaveProject} from "../../models/saveproject.model.js"
 
 const getProfile = asyncHandler(async(req,res)=>{
     
@@ -94,7 +95,14 @@ const savePrePlantData = asyncHandler(async(req,res)=>{
     return returnRespones(res,200,"save data in db",{success:true , data:save_data})
 })
 
+const saveDataProject = asyncHandler(async(req,res)=>{
+    const data = req.body;
 
+    const newcreate = await SaveProject.create({userid:req.user._id,...data});
+
+    returnRespones(res,200,"object create successfully",{success:true , data:newcreate})
+
+})
 
 
 export {
@@ -102,5 +110,6 @@ export {
     updateProfile,
     getProfile,
     findLand,
-    savePrePlantData
+    savePrePlantData,
+    saveDataProject
 }
