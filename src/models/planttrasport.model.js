@@ -10,14 +10,8 @@ const PlantTransportSchema = new mongoose.Schema({
         required:true
     },
     location:{
-        lon:{
-            type:String,
-            required:true
-        },
-        let:{
-            type:String,
-            required:true
-        }
+        type:String,
+        require:true
     },
     current_grey_plant_setup:{
         type:String,
