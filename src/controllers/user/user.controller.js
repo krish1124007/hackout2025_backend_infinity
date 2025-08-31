@@ -9,6 +9,7 @@ import {OptimizationAgent} from "../../ai/findlandengine.js"
 import { SUBCD } from "../../ai/subsb.js"
 import {PlantTransport} from "../../models/planttrasport.model.js"
 import {SaveProject} from "../../models/saveproject.model.js"
+import {ProductMachine} from "../../models/productmachine.model.js"
 
 const getProfile = asyncHandler(async(req,res)=>{
     
@@ -104,6 +105,11 @@ const saveDataProject = asyncHandler(async(req,res)=>{
 
 })
 
+const sendMachines = asyncHandler(async(req,res)=>{
+    const prodcut = await ProductMachine.find({});
+
+    return returnRespones(res,"data fetch succesfully" , {success:true , data:prodcut})
+})
 
 export {
     createHelp,
@@ -111,5 +117,6 @@ export {
     getProfile,
     findLand,
     savePrePlantData,
-    saveDataProject
+    saveDataProject,
+    sendMachines
 }
